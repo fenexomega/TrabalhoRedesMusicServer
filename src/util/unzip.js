@@ -71,11 +71,15 @@ function criarPastaDoAlbumEMoverArquivos(idAlbum,nomePasta,originFolder)
   });
 }
 
-exports.descompressZip = function (zipFile,path)
+exports.descompressZip = function (zipFile,path,callback)
 {
   var zip = new AdmZip(zipFile);
-  if(path == undefined)
+  if(path == undefined || typeof path === "function")
+  {
+    callback = path;
     path = fs.mkdtempSync('/tmp' + mpath.sep);
+
+  }
 
   console.log("Extraindo conteúdo para " + path);
   zip.extractAllTo(path, false);
@@ -95,6 +99,8 @@ exports.descompressZip = function (zipFile,path)
       }).then(function(album){
           criarPastaDoAlbumEMoverArquivos(album.get('id'),songsFolder,path);
 
+      }).then(function(){
+        callback();
       });
     });
   });

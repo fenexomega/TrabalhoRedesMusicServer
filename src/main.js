@@ -78,14 +78,19 @@ net.createServer(function(sock){
   console.log("Recebendo arquivo de " + sock.remoteAddress);
     var zipFile = contentFolder + 'tmp.zip';
     var writeStream = fs.createWriteStream(zipFile);
-    fs.mkdir(Settings.contentFolder,function(err){
-        console.log("[ERRO] Erro ao criar pasta " + Settings.contentFolder + " : " + err);
-    });
+    try{
+      fs.mkdirSync(Settings.contentFolder);
+    }
+    catch(e)
+    {
+      console.log("[ERRO] " + e);
+    }
 
     sock.on('end', function() {
       console.log('Descomprimindo zip recebido');
-      unzip.descompressZip(zipFile);
-      initAlbumList();
+      unzip.descompressZip(zipFile,function(){
+        initAlbumList();
+      });
     });
 
     writeStream.on('error',function (error) {
