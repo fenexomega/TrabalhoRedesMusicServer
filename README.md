@@ -1,6 +1,6 @@
 # TrabalhoRedesServerMusic
 ------
-Esse servidor funciona ouvindo nas seguintes portas: *7331* e *53105*.
+Esse servidor funciona ouvindo nas seguintes portas: *7331*, *53105* e *8080*.
 
 ## 7331
 ------
@@ -30,4 +30,16 @@ chamado **cover.jpg** e um arquivo json chamado **album.json** no formato:
 
 ```javascript
 { "title" : "Titulo do álbum", "artist" : "artista", "year": "1993"}
+```
+
+
+## 8080
+------
+Aqui há um servidor HTTP que envia os arquivos ao cliente. O servidor espera uma
+requisição no seguinte formato:
+
+```
+hostServidor:8080/{idAlbum}/{numberSong}.mp3 -> Para pegar a música do álbum.
+
+hostServidor:8080/{idAlbum}/cover.jpg        -> Para pegar a capa do álbum.
 ```

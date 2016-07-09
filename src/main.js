@@ -1,6 +1,7 @@
 var net         = require('net')
 var fs          = require('fs')
 var http        = require('http')
+var mpath       = require('path')
 var unzip       = require('./util/unzip.js')
 var dbConnect   = require('./db/connect.js')
 var Settings    = require('./settings.js')
@@ -126,7 +127,41 @@ net.createServer(function(sock){
       console.log("[ERRO]: " + error);
     });
     sock.pipe(writeStream);
-
-
-
 }).listen(53105);
+
+http.createServer(function(request,response){
+    var desiredFile = request.url.replace('../','');
+    var imagePath    = Settings.contentFolder + 'songs' + mpath.sep + desiredFile;
+    var extension = desiredFile.split('.')[1];
+    var fileType = '';
+    var readStream;
+
+    switch(extension)
+    {
+      case 'mp3':
+        fileType = 'audio/mpeg';
+        break;
+      case 'jpg':
+        fileType =  'image/jpeg';
+        break;
+      default:
+        //Error
+        return;
+    }
+    var stat = fs.statSync(imagePath);
+
+    response.writeHead(200,{
+      'Content-Type': fileType,
+      'Content-Length': stat.size
+    });
+
+    try{
+      readStream = fs.createReadStream(imagePath);
+      readStream.pipe(response);
+    }
+    catch(e)
+    {
+      console.log(e);
+
+    }
+}).listen(8080);
