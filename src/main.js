@@ -148,20 +148,21 @@ http.createServer(function(request,response){
         //Error
         return;
     }
-    var stat = fs.statSync(imagePath);
-
-    response.writeHead(200,{
-      'Content-Type': fileType,
-      'Content-Length': stat.size
-    });
-
     try{
+      var stat = fs.statSync(imagePath);
+
+      response.writeHead(200,{
+        'Content-Type': fileType,
+        'Content-Length': stat.size
+      });
+
       readStream = fs.createReadStream(imagePath);
       readStream.pipe(response);
     }
     catch(e)
     {
       console.log(e);
-
+      response.writeHead(404);
     }
+
 }).listen(8080);
