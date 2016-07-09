@@ -25,31 +25,60 @@ function initAlbumList()
 
 }
 
+function getSongListFromAlbum(albumid,callback)
+{
+  console.log("Gerando Lista de músicas do álbum " + albumid);
+  var songDAO = dbConnect.generateDAO()[0];
+  dbConnect.sync(function(){
+    songDAO.findAll({
+      where:{
+        albumId: albumid
+      },
+      order:[
+        ['number','ASC']
+      ]
+    }).then(function(songs){
+      callback(songs);
+    });
+  });
+
+}
+
 
 function parsePathString(string)
 {
   var r1 = string;
   var request = {};
-  var params  = r1[1].split("?")[1].split("&");
+  var params  = r1.split("&");
   for (param of params)
   {
     var key   = param.split("=")[0];
     var value = param.split("=")[1];
     request[key] = value;
   }
-  request['method'] = method;
   return request;
 }
 
 function parseDataAndDoOperation(data,socket)
 {
+  var response = {};
   data = data.toString().replace('\n','');
   if(data == "getAlbuns")
   {
     console.log("Enviando lista de Albuns");
-    var response = {};
     response.albuns = albumList;
     socket.write(JSON.stringify(response));
+    return;
+  }
+  var request = parsePathString(data);
+  console.log(request);
+  if(request.album != undefined)
+  {
+    getSongListFromAlbum(parseInt(request.album),
+  function(songs){
+    response.songs =  jsonParser.parseSongs(songs);
+    socket.write(JSON.stringify(response));
+  });
   }
 
 }

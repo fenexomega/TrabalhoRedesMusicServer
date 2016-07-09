@@ -98,7 +98,6 @@ exports.descompressZip = function (zipFile,path,callback)
         order: 'id DESC'
       }).then(function(album){
           criarPastaDoAlbumEMoverArquivos(album.get('id'),songsFolder,path);
-
       }).then(function(){
         callback();
       });

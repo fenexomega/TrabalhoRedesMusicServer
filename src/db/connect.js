@@ -1,5 +1,7 @@
 var Sequelize = require('sequelize');
-var sequelize = new Sequelize('mysql://root:root@localhost:3306/dbApp');
+var sequelize = new Sequelize('dbApp','root','root',{
+  logging: false
+});
 
 function generateDAO()
 {
@@ -7,11 +9,12 @@ function generateDAO()
   var Song = sequelize.define('song',
   {
     number:{
-      type: Sequelize.STRING
+      type: Sequelize.INTEGER
     },
     title:{
         type: Sequelize.STRING
     },
+
     artist:{
       type: Sequelize.STRING
     }
